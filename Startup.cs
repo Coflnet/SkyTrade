@@ -1,11 +1,14 @@
 using System.Reflection;
-using Coflnet.Sky.Trade.Models;
-using Coflnet.Sky.Trade.Services;
+using AutoMapper;
 using Coflnet.Sky.Core;
+using Coflnet.Sky.Filter;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using MongoDB.Driver;
 using Prometheus;
+using SkyTrade.Models;
+using SkyTrade.Models.Mappers;
+using SkyTrade.Services;
 
 namespace Coflnet.Sky.Trade;
 public class Startup
@@ -31,18 +34,18 @@ public class Startup
         });
 
         // Replace 'YourDbContext' with the name of your own DbContext derived class.
-        services.AddSingleton(a => new MongoClient(
-            Configuration["Mongo:ConnectionString"]
-        ));
-        services.AddHostedService<BaseBackgroundService>();
-        services.AddJaeger();
-        services.AddTransient<BaseService>();
+        services.AddDbContext<TradeRequestDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("CockRoachDB")));
+        services.AddAutoMapper(typeof(TradeRequestProfile));
+
+        services.AddTransient<FilterEngine>();
+        services.AddTransient<IDBService, DBService>();
+        services.AddJaeger(Configuration);
         services.AddResponseCaching();
         services.AddResponseCompression();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMapper mapper)
     {
         if (env.IsDevelopment())
         {
@@ -67,5 +70,7 @@ public class Startup
             endpoints.MapMetrics();
             endpoints.MapControllers();
         });
+
+        mapper.ConfigurationProvider.AssertConfigurationIsValid();
     }
 }
