@@ -42,6 +42,7 @@ public class Startup
         services.AddJaeger(Configuration);
         services.AddResponseCaching();
         services.AddResponseCompression();
+        services.AddHostedService<MigrationService>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
