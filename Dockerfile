@@ -6,12 +6,12 @@ WORKDIR /build/sky
 COPY SkyTrade.csproj SkyTrade.csproj
 RUN dotnet restore
 COPY . .
-RUN dotnet publish -c release
+RUN dotnet publish -c release -o /app
 
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /app
 
-COPY --from=build /build/sky/bin/release/net6.0/publish/ .
+COPY --from=build /app .
 
 ENV ASPNETCORE_URLS=http://+:8000
 
