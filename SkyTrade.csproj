@@ -20,10 +20,9 @@
     <Compile Remove="**\*.Tests.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' != 'Release'">
+    <!-- Tests -->
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
-  </ItemGroup>
-  <ItemGroup>
-	<None Include="$(ProjectDir)MockObjects\**" CopyToOutputDirectory="Always" LinkBase="MockObjects\" />
+    <None Include="$(ProjectDir)MockObjects\**" CopyToOutputDirectory="Always" LinkBase="MockObjects\" />
   </ItemGroup>
 	
   <ItemGroup>
@@ -36,7 +35,6 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
-    <PackageReference Include="prometheus-net.AspNetCore" Version="5.0.2" />
   </ItemGroup>
 
 </Project>
