@@ -5,6 +5,7 @@ namespace SkyTrade.Models
 {
     public class DbItem : IDbItem
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int? Id { get; set; }
 
         [Column(TypeName = "varchar(200)")]

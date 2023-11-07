@@ -63,6 +63,13 @@ public class DBService : IDBService
     public async Task<int> InsertDbItem(TradeRequestDTO tradeRequestDTO)
     {
         DbTradeRequest dbTradeRequest = _mapper.Map<DbTradeRequest>(tradeRequestDTO);
+        if(dbTradeRequest.Item.Id == 0)
+            dbTradeRequest.Item.Id = null;
+        foreach (var item in dbTradeRequest.WantedItems)
+        {
+            if(item.Id == 0)
+                item.Id = null;
+        }
         _dbContext.Add(dbTradeRequest);
         return await _dbContext.SaveChangesAsync();
     }
