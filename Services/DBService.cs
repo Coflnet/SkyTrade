@@ -70,6 +70,7 @@ public class DBService : IDBService
             if(item.Id == 0)
                 item.Id = null;
         }
+        dbTradeRequest.BuyerUuid = String.Empty;
         _dbContext.Add(dbTradeRequest);
         return await _dbContext.SaveChangesAsync();
     }

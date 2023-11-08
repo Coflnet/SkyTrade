@@ -6,7 +6,7 @@ namespace SkyTrade.Models
     {
         public long? Id { get; set; }
         public string PlayerUuid { get; set; }
-        public string BuyerUuid { get; set; }
+        public string? BuyerUuid { get; set; }
 
         public Item Item { get; set; }
 
