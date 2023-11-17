@@ -5,6 +5,7 @@ namespace SkyTrade.Models
     public class TradeRequestDTO
     {
         public long? Id { get; set; }
+        public string UserId { get; set; }
         public string PlayerUuid { get; set; }
         public string? BuyerUuid { get; set; }
 
@@ -18,6 +19,7 @@ namespace SkyTrade.Models
     public class WantedItem
     {
         public long? Id { get; set; }
+        public string Tag { get; set; }
         public Dictionary<string, string> Filters { get; set; }
     }
 }

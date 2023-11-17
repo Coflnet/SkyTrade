@@ -9,6 +9,7 @@ public interface IDBService
 {
     Task<IEnumerable<DbTradeRequest>> GetDbItems(int pageSize, int page);
     Task<IEnumerable<DbTradeRequest>> GetDbItemsByFilters(Dictionary<string, string> filters, int max, int page);
+    Task<IEnumerable<DbTradeRequest>> GetDbItemsByUser(string userId, int max, int page);
     Task<int> InsertDbItem(TradeRequestDTO tradeRequestDTO);
     Task InsertDbItems(TradeRequestDTO[] tradeRequestDTOs);
 }
@@ -70,9 +71,14 @@ public class DBService : IDBService
             if(item.Id == 0)
                 item.Id = null;
         }
-        dbTradeRequest.BuyerUuid = String.Empty;
+        dbTradeRequest.BuyerUuid = string.Empty;
         _dbContext.Add(dbTradeRequest);
         return await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<DbTradeRequest>> GetDbItemsByUser(string userId, int max, int page)
+    {
+        return await _dbContext.TradeRequests.Where(t => t.UserId == userId).Paged(page, max).ToListAsync();
     }
 }
 public static class QueryableExtensions

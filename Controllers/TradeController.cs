@@ -42,6 +42,15 @@ namespace SkyTrade.Controllers
             return _mapper.Map<IEnumerable<TradeRequestDTO>>(dbTradeRequests);
         }
 
+        [HttpGet]
+        [Route("TradesByUser")]
+        public async Task<IEnumerable<TradeRequestDTO>> GetByUser(string userId, int max = 20, int page = 0)
+        {
+            //TODO Validate parameters
+            IEnumerable<DbTradeRequest> dbTradeRequests = await _dbService.GetDbItemsByUser(userId, max, page);
+            return _mapper.Map<IEnumerable<TradeRequestDTO>>(dbTradeRequests);
+        }
+
         [HttpPost]
         [Route("InsertTrades")]
         public async Task Insert(TradeRequestDTO[] tradeRequestDTO)

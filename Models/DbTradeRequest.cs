@@ -7,9 +7,10 @@ namespace SkyTrade.Models
     {
         public long Id { get; set; }
 
+        [Column(TypeName = "varchar(32)")]
+        public string UserId { get; set; }
         [Column(TypeName = "varchar(200)")]
         public string PlayerUuid { get; set; }
-
         [Column(TypeName = "varchar(200)")]
         public string BuyerUuid { get; set; }
 

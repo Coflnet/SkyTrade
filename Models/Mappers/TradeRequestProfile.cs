@@ -7,16 +7,16 @@ namespace SkyTrade.Models.Mappers
     {
         public TradeRequestProfile()
         {
-            _ = CreateMap<Item, DbItem>()
-                .ForMember(dest => dest.Enchantments, opt => opt.MapFrom(src => MapDictToEnchantment(src.Enchantments)))
-                .ForMember(dest => dest.NBTLookup, opt => opt.MapFrom(src => NBT.CreateLookup(src.Tag, src.ExtraAttributes, null)))
-                .ReverseMap()
-                .ForMember(dest => dest.Enchantments, opt => opt.MapFrom(src => MapEnchantmentToDict(src.Enchantments)));
+                    _ = CreateMap<Item, DbItem>()
+                        .ForMember(dest => dest.Enchantments, opt => opt.MapFrom(src => MapDictToEnchantment(src.Enchantments)))
+                        .ForMember(dest => dest.NBTLookup, opt => opt.MapFrom(src => NBT.CreateLookup(src.Tag, src.ExtraAttributes, null)))
+                        .ReverseMap()
+                        .ForMember(dest => dest.Enchantments, opt => opt.MapFrom(src => MapEnchantmentToDict(src.Enchantments)));
 
-            CreateMap<TradeRequestDTO, DbTradeRequest>()
-                .ReverseMap();
-        }
-
+                    CreateMap<TradeRequestDTO, DbTradeRequest>()
+                        .ReverseMap();
+                }
+            
         private List<Enchantment> MapDictToEnchantment(Dictionary<string, byte>? enchantment)
         {
             return enchantment == null 
