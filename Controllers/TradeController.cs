@@ -55,8 +55,16 @@ namespace SkyTrade.Controllers
         [Route("InsertTrades")]
         public async Task Insert(TradeRequestDTO[] tradeRequestDTO)
         {
-            //TODO Validate parameters
             await _dbService.InsertDbItems(tradeRequestDTO);
         }
+
+        [HttpDelete]
+        [Route("trade/{userId}/{id}")]
+        public async Task Delete(string userId, long id)
+        {
+            //TODO Validate parameters
+            await _dbService.DeleteTrade(userId,id);
+        }
+
     }
 }

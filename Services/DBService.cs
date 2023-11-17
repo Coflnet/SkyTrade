@@ -7,6 +7,7 @@ using SkyTrade.Models;
 namespace SkyTrade.Services;
 public interface IDBService
 {
+    Task DeleteTrade(string userId, long id);
     Task<IEnumerable<DbTradeRequest>> GetDbItems(int pageSize, int page);
     Task<IEnumerable<DbTradeRequest>> GetDbItemsByFilters(Dictionary<string, string> filters, int max, int page);
     Task<IEnumerable<DbTradeRequest>> GetDbItemsByUser(string userId, int max, int page);
@@ -79,6 +80,18 @@ public class DBService : IDBService
     public async Task<IEnumerable<DbTradeRequest>> GetDbItemsByUser(string userId, int max, int page)
     {
         return await _dbContext.TradeRequests.Where(t => t.UserId == userId).Paged(page, max).ToListAsync();
+    }
+
+
+    public async Task DeleteTrade(string userId, long id)
+    {
+        DbTradeRequest? dbTradeRequest = await _dbContext.TradeRequests.FirstOrDefaultAsync(t => t.Id == id);
+        if (dbTradeRequest == null)
+            return;
+        if (dbTradeRequest.UserId != userId)
+            throw new UnauthorizedAccessException("You are not allowed to delete this trade");
+        _dbContext.TradeRequests.Remove(dbTradeRequest);
+        await _dbContext.SaveChangesAsync();
     }
 }
 public static class QueryableExtensions
