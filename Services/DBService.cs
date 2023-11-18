@@ -65,11 +65,11 @@ public class DBService : IDBService
     public async Task<int> InsertDbItem(TradeRequestDTO tradeRequestDTO)
     {
         DbTradeRequest dbTradeRequest = _mapper.Map<DbTradeRequest>(tradeRequestDTO);
-        if(dbTradeRequest.Item.Id == 0)
+        if (dbTradeRequest.Item.Id == 0)
             dbTradeRequest.Item.Id = null;
         foreach (var item in dbTradeRequest.WantedItems)
         {
-            if(item.Id == 0)
+            if (item.Id == 0)
                 item.Id = null;
         }
         dbTradeRequest.BuyerUuid = string.Empty;
@@ -85,11 +85,11 @@ public class DBService : IDBService
 
     public async Task DeleteTrade(string userId, long id)
     {
-        DbTradeRequest? dbTradeRequest = await _dbContext.TradeRequests.FirstOrDefaultAsync(t => t.Id == id);
+        DbTradeRequest? dbTradeRequest = await _dbContext.TradeRequests.Where(t => t.Id == id).Include(t=>t.WantedItems).Include(t=>t.Item).FirstOrDefaultAsync();
         if (dbTradeRequest == null)
             return;
         if (dbTradeRequest.UserId != userId)
-            throw new UnauthorizedAccessException("You are not allowed to delete this trade");
+            throw new CoflnetException("not_allowed", "You are not allowed to delete this trade because you didn't create it");
         _dbContext.TradeRequests.Remove(dbTradeRequest);
         await _dbContext.SaveChangesAsync();
     }

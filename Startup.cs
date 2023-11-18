@@ -52,6 +52,10 @@ public class Startup
         {
             app.UseDeveloperExceptionPage();
         }
+        app.UseExceptionHandler(errorApp =>
+            {
+                ErrorHandler.Add(errorApp, "-trade");
+            });
         app.UseSwagger();
         app.UseSwaggerUI(c =>
         {
