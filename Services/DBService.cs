@@ -44,14 +44,20 @@ public class DBService : IDBService
 
         HashSet<int?> selection = _filterEngine.AddInterfaceFilters(mainSelect, filters).Cast<DbItem>().Select(item => item.Id).ToHashSet();
 
-        return await _dbContext.TradeRequests
-            .Include(t => t.Item)
+        var baseSelect = _dbContext.TradeRequests
                 .Where(t => selection.Contains(t.Item.Id))
-            .Include(t => t.Item.NBTLookup)
-            .Include(t => t.Item.Enchantments)
-            .Include(t => t.WantedItems)
-            .Paged(page, pageSize)
-            .ToListAsync();
+           ;
+        return await ExecuteSelect(pageSize, page, baseSelect);
+    }
+
+    private static async Task<IEnumerable<DbTradeRequest>> ExecuteSelect(int pageSize, int page, IQueryable<DbTradeRequest> baseSelect)
+    {
+        return await baseSelect.Include(t => t.Item)
+                 .Include(t => t.Item.NBTLookup)
+                 .Include(t => t.Item.Enchantments)
+                 .Include(t => t.WantedItems)
+                 .Paged(page, pageSize)
+                 .ToListAsync();
     }
 
     public async Task InsertDbItems(TradeRequestDTO[] tradeRequestDTOs)
@@ -79,16 +85,17 @@ public class DBService : IDBService
 
     public async Task<IEnumerable<DbTradeRequest>> GetDbItemsByUser(string userId, int max, int page)
     {
-        return await _dbContext.TradeRequests.Where(t => t.UserId == userId).Paged(page, max).ToListAsync();
+        var baseSelect = _dbContext.TradeRequests.Where(t => t.UserId == userId);
+        return await ExecuteSelect(max, page, baseSelect);
     }
 
 
     public async Task DeleteTrade(string userId, long id)
     {
-        DbTradeRequest? dbTradeRequest = await _dbContext.TradeRequests.Where(t => t.Id == id).Include(t=>t.WantedItems).Include(t=>t.Item).FirstOrDefaultAsync();
+        DbTradeRequest? dbTradeRequest = await _dbContext.TradeRequests.Where(t => t.Id == id).Include(t => t.WantedItems).Include(t => t.Item).FirstOrDefaultAsync();
         if (dbTradeRequest == null)
             return;
-        if (dbTradeRequest.UserId != userId)
+        if (dbTradeRequest.UserId != userId && !string.IsNullOrEmpty(dbTradeRequest.UserId))
             throw new CoflnetException("not_allowed", "You are not allowed to delete this trade because you didn't create it");
         _dbContext.TradeRequests.Remove(dbTradeRequest);
         await _dbContext.SaveChangesAsync();
