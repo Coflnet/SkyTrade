@@ -20,12 +20,14 @@ public class DBService : IDBService
     private readonly TradeRequestDBContext _dbContext;
     private readonly IMapper _mapper;
     private readonly FilterEngine _filterEngine;
+    private readonly ILogger<DBService> logger;
 
-    public DBService(TradeRequestDBContext dbContext, IMapper mapper, FilterEngine filterEngine)
+    public DBService(TradeRequestDBContext dbContext, IMapper mapper, FilterEngine filterEngine, ILogger<DBService> logger)
     {
         _dbContext = dbContext;
         _mapper = mapper;
         _filterEngine = filterEngine;
+        this.logger = logger;
     }
 
     public async Task<IEnumerable<DbTradeRequest>> GetDbItems(int pageSize, int page)
@@ -71,6 +73,32 @@ public class DBService : IDBService
     public async Task<int> InsertDbItem(TradeRequestDTO tradeRequestDTO)
     {
         DbTradeRequest dbTradeRequest = _mapper.Map<DbTradeRequest>(tradeRequestDTO);
+
+        foreach (var group in dbTradeRequest.WantedItems)
+        {
+            var unsupported = new List<string>();
+            var args = new FilterArgs(group.Filters, true, _filterEngine);
+            foreach (var filter in group.Filters)
+            {
+                try
+                {
+                    var expression = _filterEngine.GetExpressions(new Dictionary<string, string>(){
+                            {filter.Key,filter.Value}
+                        }).First();
+                    expression.Compile().Invoke(dbTradeRequest.Item);
+                }
+                catch (System.Exception e)
+                {
+                    logger.LogError(e, $"Error while executing filter {filter.Key} with value {filter.Value}");
+                    unsupported.Add(filter.Key);
+                }
+            }
+            if (unsupported.Count > 1) 
+                throw new CoflnetException("invalid_filter", $"The filters {string.Join(',', unsupported)} are not supported for trades right now");
+            if(unsupported.Count == 1)
+                throw new CoflnetException("invalid_filter", $"The filter {unsupported[0]} is not supported for trades right now");
+
+        }
         if (dbTradeRequest.Item.Id == 0)
             dbTradeRequest.Item.Id = null;
         foreach (var item in dbTradeRequest.WantedItems)
