@@ -73,7 +73,22 @@ public class DBService : IDBService
     public async Task<int> InsertDbItem(TradeRequestDTO tradeRequestDTO)
     {
         DbTradeRequest dbTradeRequest = _mapper.Map<DbTradeRequest>(tradeRequestDTO);
+        ValidateFilters(dbTradeRequest);
+        if (dbTradeRequest.Item.Id == 0)
+            dbTradeRequest.Item.Id = null;
 
+        foreach (var item in dbTradeRequest.WantedItems)
+        {
+            if (item.Id == 0)
+                item.Id = null;
+        }
+        dbTradeRequest.BuyerUuid = string.Empty;
+        _dbContext.Add(dbTradeRequest);
+        return await _dbContext.SaveChangesAsync();
+    }
+
+    private void ValidateFilters(DbTradeRequest dbTradeRequest)
+    {
         foreach (var group in dbTradeRequest.WantedItems)
         {
             var unsupported = new List<string>();
@@ -93,22 +108,12 @@ public class DBService : IDBService
                     unsupported.Add(filter.Key);
                 }
             }
-            if (unsupported.Count > 1) 
+            if (unsupported.Count > 1)
                 throw new CoflnetException("invalid_filter", $"The filters {string.Join(',', unsupported)} are not supported for trades right now");
-            if(unsupported.Count == 1)
+            if (unsupported.Count == 1)
                 throw new CoflnetException("invalid_filter", $"The filter {unsupported[0]} is not supported for trades right now");
 
         }
-        if (dbTradeRequest.Item.Id == 0)
-            dbTradeRequest.Item.Id = null;
-        foreach (var item in dbTradeRequest.WantedItems)
-        {
-            if (item.Id == 0)
-                item.Id = null;
-        }
-        dbTradeRequest.BuyerUuid = string.Empty;
-        _dbContext.Add(dbTradeRequest);
-        return await _dbContext.SaveChangesAsync();
     }
 
     public async Task<IEnumerable<DbTradeRequest>> GetDbItemsByUser(string userId, int max, int page)

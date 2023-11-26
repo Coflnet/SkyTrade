@@ -23,7 +23,7 @@ namespace SkyTrade.Models
         [Column(TypeName = "varchar(1000)")]
         public string? Description { get; set; }
 
-        public int Count { get; set; }
+        public long Count { get; set; }
 
         public IEnumerable<NBTLookup> NBTLookup { get; set; }
     }

@@ -14,7 +14,9 @@ namespace SkyTrade.Models.Mappers
                         .ForMember(dest => dest.Enchantments, opt => opt.MapFrom(src => MapEnchantmentToDict(src.Enchantments)));
 
                     CreateMap<TradeRequestDTO, DbTradeRequest>()
-                        .ReverseMap();
+                        .ForPath(dest => dest.Item.Count, opt => opt.MapFrom(src => src.Coins))
+                        .ReverseMap()
+                        .ForMember(dest => dest.Coins, opt => opt.MapFrom(src => src.Item.Count));
                 }
             
         private List<Enchantment> MapDictToEnchantment(Dictionary<string, byte>? enchantment)
