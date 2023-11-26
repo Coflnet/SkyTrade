@@ -2,6 +2,7 @@
 using Coflnet.Sky.Core;
 using Coflnet.Sky.Filter;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using SkyTrade.Models;
 
 namespace SkyTrade.Services;
@@ -83,6 +84,7 @@ public class DBService : IDBService
                 item.Id = null;
         }
         dbTradeRequest.BuyerUuid = string.Empty;
+        Console.WriteLine(JsonConvert.SerializeObject(dbTradeRequest, Formatting.Indented));
         _dbContext.Add(dbTradeRequest);
         return await _dbContext.SaveChangesAsync();
     }
