@@ -49,6 +49,7 @@ public class DBService : IDBService
 
         var baseSelect = _dbContext.TradeRequests
                 .Where(t => selection.Contains(t.Item.Id))
+                .OrderByDescending(t => t.Id)
            ;
         return await ExecuteSelect(pageSize, page, baseSelect);
     }
