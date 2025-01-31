@@ -18,7 +18,8 @@ namespace SkyTrade.Models.Mappers
                 //.ForMember(dest => dest.Item.Count, opt => opt.MapFrom(src => src.Coins == 0 ? src.Item.Count : src.Coins))
                 .AfterMap((src, dest) =>
                 {
-                    dest.Item.Count = (src.Coins ?? 0) == 0 ? src.Item.Count : src.Coins ?? 0;
+                    if (dest.Item != null)
+                        dest.Item.Count = (src.Coins ?? 0) == 0 ? src.Item.Count : src.Coins ?? 0;
                 })
                 .ReverseMap()
                 .ForMember(dest => dest.Coins, opt => opt.MapFrom(src => src.Item.Count));

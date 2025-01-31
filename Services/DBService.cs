@@ -76,7 +76,7 @@ public class DBService : IDBService
     {
         DbTradeRequest dbTradeRequest = _mapper.Map<DbTradeRequest>(tradeRequestDTO);
         ValidateFilters(dbTradeRequest);
-        if (dbTradeRequest.Item.Id == 0)
+        if (dbTradeRequest.Item != null && dbTradeRequest.Item.Id == 0)
             dbTradeRequest.Item.Id = null;
 
         foreach (var item in dbTradeRequest.WantedItems)
