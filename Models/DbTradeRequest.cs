@@ -14,7 +14,7 @@ namespace SkyTrade.Models
         [Column(TypeName = "varchar(200)")]
         public string BuyerUuid { get; set; }
 
-        public DbItem Item { get; set; }
+        public DbItem? Item { get; set; }
 
         public List<WantedItem> WantedItems { get; set; }
 

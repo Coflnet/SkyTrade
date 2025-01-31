@@ -11,7 +11,7 @@ namespace SkyTrade.Models
         [Column(TypeName = "varchar(200)")]
         public string ItemName { get; set; } = null!;
 
-        [Column(TypeName = "varchar(30)")]
+        [Column(TypeName = "varchar(44)")]
         public string Tag { get; set; } = null!;
 
         public Dictionary<string, object>? ExtraAttributes { get; set; }

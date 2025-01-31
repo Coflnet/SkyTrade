@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Newtonsoft.Json;
 //using System.Text.Json;
-using static Grpc.Core.Metadata;
 
 namespace SkyTrade.Models
 {

@@ -9,7 +9,7 @@ namespace SkyTrade.Models
         public string PlayerUuid { get; set; }
         public string? BuyerUuid { get; set; }
 
-        public Item Item { get; set; }
+        public Item? Item { get; set; }
         public long? Coins { get; set; }
 
         public List<WantedItem> WantedItems { get; set; }
