@@ -3,13 +3,32 @@ using Coflnet.Sky.Core;
 
 namespace SkyTrade.Models.Mappers
 {
+    /// <summary>
+    /// <see cref="NBT.CreateLookup(string, Dictionary{string, object}, List{KeyValuePair{string, object}})"/> is an instance
+    /// method since the shared library dropped the static one, so the lookup is built from the DI-provided instance.
+    /// </summary>
+    public class NbtLookupResolver : IValueResolver<Item, DbItem, IEnumerable<NBTLookup>>
+    {
+        private readonly NBT nbt;
+
+        public NbtLookupResolver(NBT nbt)
+        {
+            this.nbt = nbt;
+        }
+
+        public IEnumerable<NBTLookup> Resolve(Item source, DbItem destination, IEnumerable<NBTLookup> destMember, ResolutionContext context)
+        {
+            return nbt.CreateLookup(source.Tag, source.ExtraAttributes, null);
+        }
+    }
+
     public class TradeRequestProfile : Profile
     {
         public TradeRequestProfile()
         {
             _ = CreateMap<Item, DbItem>()
                 .ForMember(dest => dest.Enchantments, opt => opt.MapFrom(src => MapDictToEnchantment(src.Enchantments)))
-                .ForMember(dest => dest.NBTLookup, opt => opt.MapFrom(src => NBT.CreateLookup(src.Tag, src.ExtraAttributes, null)))
+                .ForMember(dest => dest.NBTLookup, opt => opt.MapFrom<NbtLookupResolver>())
                 .ReverseMap()
                 .ForMember(dest => dest.Enchantments, opt => opt.MapFrom(src => MapEnchantmentToDict(src.Enchantments)))
                 .ForMember(dest => dest.Count, opt => opt.MapFrom(src => src.Count > 64 ? 1 : src.Count));
