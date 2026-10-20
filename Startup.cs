@@ -2,9 +2,10 @@ using System.Reflection;
 using AutoMapper;
 using Coflnet.Sky.Core;
 using Coflnet.Sky.Filter;
+using Coflnet.Sky.Items.Client.Api;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Prometheus;
 using SkyTrade.Models;
 using SkyTrade.Models.Mappers;
@@ -27,6 +28,7 @@ public class Startup
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "SkyTrade", Version = "v1" });
+            c.DocumentFilter<Coflnet.OpenApi.NullOnlySchemaDocumentFilter>();
             // Set the comments path for the Swagger JSON and UI.
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -37,6 +39,13 @@ public class Startup
         services.AddDbContext<TradeRequestDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("CockRoachDB")));
         services.AddAutoMapper(typeof(TradeRequestProfile));
 
+        services.AddSingleton<NBT>();
+        services.AddSingleton<ItemDetails>();
+        services.AddSingleton<IItemsApi>(di =>
+        {
+            var config = di.GetRequiredService<IConfiguration>();
+            return new ItemsApi(config["ITEMS_BASE_URL"]);
+        });
         services.AddTransient<FilterEngine>();
         services.AddTransient<IDBService, DBService>();
         services.AddJaeger(Configuration);
